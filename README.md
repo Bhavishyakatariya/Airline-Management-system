@@ -522,8 +522,9 @@ cd airline-management-system
      ddate DATE
    );
    
-   -- Insert sample login credential
-   INSERT INTO login (username, password) VALUES ('admin', 'admin123');
+   -- Insert your own login credentials (use strong passwords in production)
+   INSERT INTO login (username, password) VALUES ('admin', 'CHANGE_THIS_PASSWORD_123');
+   INSERT INTO login (username, password) VALUES ('user', 'CHANGE_THIS_PASSWORD_456');
    
    -- Insert sample flights
    INSERT INTO flight VALUES
@@ -533,16 +534,58 @@ cd airline-management-system
    ('Air India AI104', 'AI104', 'Bangalore', 'Hyderabad');
    ```
 
-3. **Update Database Credentials (if different)**
-   - Open `airlinemanagementsystem/Conn.java`
-   - Update connection string, username, and password:
-   ```java
-   String url = "jdbc:mysql://localhost:3306/airlinemanagementsystem";
-   String user = "root";
-   String password = "your_password";
+3. **Set Database Configuration**
+   - Database credentials are loaded from environment variables (secure approach)
+   - Copy `.env.example` to `.env` in the project root
+   - Update the `.env` file with your database credentials:
+   ```
+   DB_HOST=localhost
+   DB_PORT=3306
+   DB_USER=root
+   DB_PASSWORD=your_password
+   ```
+   - **Important:** Never commit `.env` file to Git (it's in `.gitignore`)
+
+### Step 3: Configure Database Connection
+
+Database credentials are loaded from environment variables for security:
+
+**Option A: Using .env File (Recommended for Development)**
+
+1. Copy `.env.example` to `.env`:
+   ```bash
+   cp .env.example .env
    ```
 
-### Step 3: Compile the Project
+2. Edit `.env` with your actual database credentials:
+   ```
+   DB_HOST=localhost
+   DB_PORT=3306
+   DB_USER=root
+   DB_PASSWORD=your_secure_password
+   ```
+
+3. `.env` is in `.gitignore` - it won't be committed to Git
+
+**Option B: Using System Environment Variables (Recommended for Production)**
+
+Set environment variables before running the application:
+
+```bash
+# Windows (Command Prompt)
+set DB_HOST=localhost && set DB_PORT=3306 && set DB_USER=root && set DB_PASSWORD=your_password
+
+# Windows (PowerShell)
+$env:DB_HOST="localhost"; $env:DB_PORT="3306"; $env:DB_USER="root"; $env:DB_PASSWORD="your_password"
+
+# Linux/Mac (Bash)
+export DB_HOST=localhost
+export DB_PORT=3306
+export DB_USER=root
+export DB_PASSWORD=your_password
+```
+
+### Step 4: Compile the Project
 
 **Option A: Using Batch Script (Windows)**
 ```batch
@@ -572,9 +615,28 @@ java -cp ../lib/*:. Login
 java -cp lib/*:. airlinemanagementsystem.Login
 ```
 
-The login window will appear. Use credentials:
+### Step 5: Run the Application
+
+**Important:** Make sure environment variables are set (DB_HOST, DB_PORT, DB_USER, DB_PASSWORD)
+
+Before running, set your database credentials:
+
+```bash
+# Windows (Command Prompt)
+set DB_HOST=localhost && set DB_PORT=3306 && set DB_USER=root && set DB_PASSWORD=your_password && java -cp lib/*:. airlinemanagementsystem.Login
+
+# Linux/Mac (Bash)
+export DB_HOST=localhost DB_PORT=3306 DB_USER=root DB_PASSWORD=your_password
+java -cp lib/*:. airlinemanagementsystem.Login
+```
+
+The login window will appear. Use the credentials you configured in your database:
+
+**ℹ️ Default Example Credentials (Change these in production!):**
 - **Username:** admin
-- **Password:** admin123
+- **Password:** CHANGE_THIS_PASSWORD_123
+
+**⚠️ Security Note:** Always use strong, unique passwords in production. Change default credentials immediately after setup.
 
 ---
 
@@ -582,9 +644,10 @@ The login window will appear. Use credentials:
 
 ### 1. **Login to System**
    - Launch the application
-   - Enter username: `admin`
-   - Enter password: `admin123`
+   - Enter your configured username
+   - Enter your configured password
    - Click "Login" button
+   - **Note:** Default example credentials are shown in `.env.example` file
 
 ### 2. **Access Home Menu**
    - After successful login, main menu appears with 6 options
@@ -687,11 +750,13 @@ Then update the markdown links above with actual image paths.
 - ✅ User login with username/password validation
 - ✅ Session management for authenticated users
 - ✅ Logout functionality to clear user session
+- ✅ Database credentials loaded from environment variables (not hardcoded)
 
 ### Data Protection
+- ✅ **Environment-based Configuration** - Credentials stored in environment variables, not in source code
+- ✅ **Configuration Flexibility** - Easy database migration without code changes
 - ⚠️ **TO BE IMPROVED:** Passwords stored in plaintext (should use hashing)
-- ⚠️ **TO BE IMPROVED:** Database credentials hardcoded (should use config files)
-- ✅ Passenger Aadhar uniqueness ensures data integrity
+- ⚠️ **TO BE IMPROVED:** SQL injection prevention (use PreparedStatements)
 
 ### Transaction Safety
 - ✅ Foreign key constraints maintain referential integrity
